@@ -50,8 +50,10 @@ func initDB() (err error) {
 	}
 
 	after := time.Now() //获取当前时间
-	fmt.Printf("Time duration:%d \n", after.Sub(before) )
-	 return after.Sub(before), nil;
+	 dur := after.Sub(before)
+	 fmt.Printf("Time duration:%d \n", dur )
+	 fmt.Printf("[%v]Seconds [%v]ms\n", dur.Seconds(), dur.Milliseconds())
+	 return dur, nil;
  }
 
 // 查询单条数据示例
@@ -84,8 +86,73 @@ func queryRowDemoByPrepare(userIdFrom, userIdTo int) (time.Duration, error) {
 	}
 
 	after := time.Now() //获取当前时间
-	fmt.Printf("prepared Time duration:%d \n",  after.Sub(before))
-	return after.Sub(before), nil;
+
+	dur := after.Sub(before)
+	fmt.Printf("prepared Time duration:%d \n", dur )
+	fmt.Printf("[%v]Seconds [%v]ms\n", dur.Seconds(), dur.Milliseconds())
+	return dur, nil;
+}
+
+// 预处理插入示例
+func prepareInsertDemo(username string, usertype int) {
+	sqlStr := "insert into user(username, usertype) values (?,?)"
+	stmt, err := db.Prepare(sqlStr)
+	if err != nil {
+		fmt.Printf("prepare insert failed, err:%v\n", err)
+		return
+	}
+	defer stmt.Close()
+	result, err := stmt.Exec(username, usertype)
+	if err != nil {
+		fmt.Printf("insert failed, err:%v\n", err)
+		return
+	}
+	theLastId, err := result.LastInsertId() // 新插入数据的id
+	fmt.Println("insert successfully. id:", theLastId)
+}
+
+// 更新数据
+func updateRowDemo(username string, active int) {
+	//sqlStr := "update user set active=? where username = ?"
+	//ret, err := db.Exec(sqlStr, active, username)
+
+	sqlStr := "update user set active=? where username = ?"
+
+	stmt, err := db.Prepare(sqlStr)
+	if err != nil {
+		fmt.Printf("prepare update failed, err:%v\n", err)
+		return
+	}
+	defer stmt.Close()
+	result, err := stmt.Exec(active,username)
+	n, err := result.RowsAffected() // 操作影响的行数
+	if err != nil {
+		fmt.Printf("get RowsAffected failed, err:%v\n", err)
+		return
+	}
+	fmt.Printf("update successfully, affected rows:%d\n", n)
+}
+
+// 更新数据
+func deleteRowDemo(username string, active int) {
+	sqlStr := "delete from user where username = ? and active=?"
+	stmt, err := db.Prepare(sqlStr)
+	if err != nil {
+		fmt.Printf("prepare delete failed, err:%v\n", err)
+		return
+	}
+	defer stmt.Close()
+	result, err := stmt.Exec(username, active)
+	if err != nil {
+		fmt.Printf("delete exec failed, err:%v\n", err)
+		return
+	}
+	n, err := result.RowsAffected() // 操作影响的行数
+	if err != nil {
+		fmt.Printf("get RowsAffected failed, err:%v\n", err)
+		return
+	}
+	fmt.Printf("delete successfully, affected rows:%d\n", n)
 }
 
 func main() {
@@ -95,7 +162,13 @@ func main() {
 		return
 	}
 
-	dur1, err := queryRowDemo(0, 20)
-	dur2, err := queryRowDemoByPrepare(0, 20)
-	fmt.Printf("Final time:%d  %d\n", dur1, dur2)
+	queryRowDemo(0, 5)
+	//dur1, err := queryRowDemo(0, 20)
+	//dur2, err := queryRowDemoByPrepare(0, 20)
+	//fmt.Printf("Final time:%d  %d\n", dur1, dur2)
+
+	prepareInsertDemo("nihaoGo",1)
+
+	updateRowDemo("nihaoGo",1)
+	deleteRowDemo("nihaoGo",1)
 }
