@@ -50,10 +50,10 @@ func initDB() (err error) {
 	}
 
 	after := time.Now() //获取当前时间
-	 dur := after.Sub(before)
-	 fmt.Printf("Time duration:%d \n", dur )
-	 fmt.Printf("[%v]Seconds [%v]ms\n", dur.Seconds(), dur.Milliseconds())
-	 return dur, nil;
+	dur := after.Sub(before)
+	fmt.Printf("Time duration:%d \n", dur )
+	fmt.Printf("[%v]Seconds [%v]ms\n", dur.Seconds(), dur.Milliseconds())
+	return dur, nil;
  }
 
 // 查询单条数据示例
@@ -201,7 +201,7 @@ func transactionDemo(userId int) {
 	err = tx.Commit() // 提交事务
 	if err != nil {
 		tx.Rollback() // 回滚
-		fmt.Printf("Failed to commit, err:%v\n", err)
+		fmt.Printf("Failed to commit, err:%s\n", err)
 		return
 	}
 	fmt.Println("trans successes!")

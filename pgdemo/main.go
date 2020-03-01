@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
+	"log"
 )
 
 const (
 	host     = "localhost"
 	port     = 5432
 	user     = "u1"
-	password = "wwwwww"
+	password = "rati0nal"
 	dbname   = "db1"
 )
 
@@ -19,6 +20,10 @@ type User struct {
 	username string
 	fullName string
 	email string
+}
+
+func init() {
+	log.SetFlags(log.Llongfile | log.Lmicroseconds | log.Ldate)
 }
 
 func main()  {
@@ -36,7 +41,10 @@ func main()  {
 	}
 
 	fmt.Println("Successfully connected!")
-	query(db)
+	//query(db)
+	insertUser(db)
+	updateUser(db, 2, "newMail@fb.com")
+	deleteUser(db,3)
 }
 
 
@@ -67,7 +75,49 @@ func query(db *sql.DB){
 	fmt.Println("query end")
 }
 
+//
+func insertUser(db *sql.DB)  {
+	stmt,err := db.Prepare("insert into yqschema1.user(name,fullname,email) values($1,$2,$3)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	_,err = stmt.Exec("user01","full user01","user01@qq.com")
+	if err != nil {
+		log.Fatal(err)
+	}else {
+		fmt.Println("insert into user successfully")
+	}
+}
 
+func updateUser(db *sql.DB, userId int, email string) {
+	stmt,err := db.Prepare("UPDATE  yqschema1.user set email=$1 WHERE  id=$2")
+	if err != nil {
+		log.Fatal(err)
+	}
+	result,err := stmt.Exec(email, userId)
+	if err != nil {
+		log.Fatal(err)
+	}else {
+		n, _ := result.RowsAffected() // 操作影响的行数
+		fmt.Println("udpate user successfully. RowsAffected:", n)
+	}
+
+}
+
+func deleteUser(db *sql.DB, userId int) {
+	stmt,err := db.Prepare("DELETE FROM yqschema1.user WHERE  id=$1")
+	if err != nil {
+		log.Fatal("failed to prepare delete sql", err)
+	}
+
+	result,err := stmt.Exec(userId)
+	if err != nil {
+		log.Fatal(err)
+	}else {
+		n, _ := result.RowsAffected() // 操作影响的行数
+		fmt.Println("delete form user successfully. RowsAffected:", n)
+	}
+}
 
 
 
