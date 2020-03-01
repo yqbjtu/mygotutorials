@@ -170,5 +170,39 @@ func main() {
 	prepareInsertDemo("nihaoGo",1)
 
 	updateRowDemo("nihaoGo",1)
-	deleteRowDemo("nihaoGo",1)
+	//deleteRowDemo("nihaoGo",1)
+	transactionDemo(19)
+}
+
+// 事务操作示例
+func transactionDemo(userId int) {
+	tx, err := db.Begin() // 开启事务
+	if err != nil {
+		if tx != nil {
+			tx.Rollback() // 回滚
+		}
+		fmt.Printf("Failed to begin for trans, err:%v\n", err)
+		return
+	}
+	sqlStr1 := "Update user set active=30 where id=?"
+	_, err = tx.Exec(sqlStr1, userId)
+	if err != nil {
+		tx.Rollback() // 回滚
+		fmt.Printf("Failed to exec sql1, err:%v\n", err)
+		return
+	}
+	sqlStr2 := "Update user1 set active=40 where id=?"
+	_, err = tx.Exec(sqlStr2, userId)
+	if err != nil {
+		tx.Rollback() // 回滚
+		fmt.Printf("Failed to exec sql2, err:%v\n", err)
+		return
+	}
+	err = tx.Commit() // 提交事务
+	if err != nil {
+		tx.Rollback() // 回滚
+		fmt.Printf("Failed to commit, err:%v\n", err)
+		return
+	}
+	fmt.Println("trans successes!")
 }
