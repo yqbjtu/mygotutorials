@@ -43,7 +43,7 @@ func initDB() (err error) {
 		// 非常重要：确保QueryRow之后调用Scan方法，否则持有的数据库链接不会被释放
 		err := db.QueryRow(sqlStr, i).Scan(&u.id, &u.username, &u.usertype)
 		if err != nil {
-			fmt.Printf("scan failed, %d, err:%v\n", i, err)
+			fmt.Printf("scan failed,  %d, err:%v\n", i, err)
 		} else {
 			fmt.Printf("id:%d name:%s usertype:%d\n", u.id, u.username, u.usertype)
 		}
