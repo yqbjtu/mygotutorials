@@ -36,7 +36,7 @@ func init() {
 func main()  {
 	fptr := flag.String("fpath", "config.txt", "config file path to read from")
 	flag.Parse()
-	fmt.Println("value of fpath is", *fptr)
+	fmt.Println("value of fpath is  ", *fptr)
 
 
 	config := InitConfig(*fptr)
