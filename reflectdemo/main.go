@@ -36,10 +36,13 @@ func main() {
 	fmt.Println("categroy is not initialized.")
 	getAndUpdateFieldValueByReflect(&category)
 	category = Category{ID:001, Name: "空调", Description: "空调大类"}
-	fmt.Printf("---updateFieldValue by reflace.   rawValue:%v \n", category)
+	fmt.Printf("---updateFieldValue by reflect.   rawValue:%v \n\n", category)
 	fmt.Println("categroy is initialized.")
+	fmt.Printf("---enumerateFieldValue by reflect.   rawValue:%v \n", category)
+	enumerateFieldByReflect(category)
+	fmt.Printf("---start of updateFieldValue by reflect.   rawValue:%v \n", category)
 	getAndUpdateFieldValueByReflect(&category)
-	fmt.Printf("---updateFieldValue by reflace.   newValue:%v \n", category)
+	fmt.Printf("---end of updateFieldValue by reflace.   newValue:%v \n\n", category)
 
 	typeInfo, kindInfo = reflectTypeAndKind(i)
 	fmt.Printf("primitive type reflect info.         name:%s, kind:%v \n", typeInfo, kindInfo)
@@ -66,6 +69,8 @@ func reflectTypeAndKind(x interface{}) (typeInfo string, kindInfo reflect.Kind) 
 
 func enumerateFieldByReflect(x interface{}) {
 	reflectObject := reflect.TypeOf(x)
+	reflectValue := reflect.ValueOf(x)
+
 	// NumField returns a struct type's field count.
 	// It panics if the type's Kind is not Struct.
 	if reflectObject.Kind() == reflect.Struct {
@@ -74,8 +79,23 @@ func enumerateFieldByReflect(x interface{}) {
 		for i := 0; i < num; i++ {
 			// 获取每个属性的结构体字段类型
 			fieldType := reflectObject.Field(i)
-			// 输出属性名和tag
-			fmt.Printf("%dth, name: %v,  type %v, tag: '%v'\n", i, fieldType.Name, fieldType.Type, fieldType.Tag)
+			
+			filedValue := reflectValue.Field(i)
+			fieldKind := filedValue.Kind()
+
+			var rawIntValue int32
+			var rawStrValue string
+			switch fieldKind {
+			    case reflect.Int32:
+				//获取64位的值，强制类型转换为int类型
+				    rawIntValue = filedValue.Interface().(int32)
+			    case reflect.String:
+				    rawStrValue = filedValue.Interface().(string)
+			    default:
+		    } 
+		 	// 输出属性名和tag
+			fmt.Printf("%dth, name: %v,  type %v, tag: '%v', currentIntValue:%v, currentStrValue:%v \n", 
+				i, fieldType.Name, fieldType.Type, fieldType.Tag, rawIntValue, rawStrValue)
 		}
 	  
 		// 通过字段名, 找到字段类型信息
@@ -91,7 +111,9 @@ func enumerateFieldByReflect(x interface{}) {
 		fmt.Println("non-struct, no filed")
 	}
 }
-
+/*
+* 更新值，必须传入指针类型， 反射只能修改可以导出的属性（也就是大写字母开始的属性）
+*/
 func getAndUpdateFieldValueByReflect(x interface{}) {
 	reflectObject := reflect.TypeOf(x)
 	reflectValue := reflect.ValueOf(x)
@@ -118,15 +140,17 @@ func getAndUpdateFieldValueByReflect(x interface{}) {
 			filedValue := reflectValue.Field(i)
 			fieldKind := filedValue.Kind()
 			// 输出属性名和tag
-			fmt.Printf("%dth, name: %v,  type %v, tag: '%v', value:%v, fieldValueKind:%v \n",
-			    i, fieldType.Name, fieldType.Type, fieldType.Tag, filedValue, fieldKind)
-			
-			//fieldCase := interface{}(fieldKind).(type) 
+			fmt.Printf("%dth, name: %v,  type %v, tag: '%v', filedValue:%v, fieldValueInterface:%v \n",
+			    i, fieldType.Name, fieldType.Type, fieldType.Tag, filedValue, filedValue.Interface())
+
 			switch fieldKind {
-			    case reflect.Int32:
-				    filedValue.SetInt(999)
-			    case reflect.String:
-				    filedValue.SetString( "aaa")
+				case reflect.Int32:					
+					newIntValue := 999 + filedValue.Interface().(int32)
+					// 强制将int32转换为int64，否则无法传入参数
+				    filedValue.SetInt(int64(newIntValue))
+				case reflect.String:
+					newStrValue := "aaa-" + filedValue.Interface().(string)
+				    filedValue.SetString(newStrValue)
 				default:
 			 } 
 		}
