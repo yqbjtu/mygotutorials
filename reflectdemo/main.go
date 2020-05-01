@@ -34,10 +34,12 @@ func main() {
 	fmt.Printf("type reflect info of reflect.        name:%s, kind:%s \n", typeInfo, kindInfo)
 	enumerateFieldByReflect(category)
 	fmt.Println("categroy is not initialized.")
-	getAndUpdateFieldValueByReflect(category)
+	getAndUpdateFieldValueByReflect(&category)
 	category = Category{ID:001, Name: "空调", Description: "空调大类"}
+	fmt.Printf("---updateFieldValue by reflace.   rawValue:%v \n", category)
 	fmt.Println("categroy is initialized.")
-	getAndUpdateFieldValueByReflect(category)
+	getAndUpdateFieldValueByReflect(&category)
+	fmt.Printf("---updateFieldValue by reflace.   newValue:%v \n", category)
 
 	typeInfo, kindInfo = reflectTypeAndKind(i)
 	fmt.Printf("primitive type reflect info.         name:%s, kind:%v \n", typeInfo, kindInfo)
@@ -88,27 +90,45 @@ func enumerateFieldByReflect(x interface{}) {
 	} else {
 		fmt.Println("non-struct, no filed")
 	}
-	
-	
 }
 
 func getAndUpdateFieldValueByReflect(x interface{}) {
 	reflectObject := reflect.TypeOf(x)
 	reflectValue := reflect.ValueOf(x)
+	reflectKind := reflectObject.Kind()
+	actualReflectKind := reflect.Ptr
+	
+	if reflectKind == reflect.Ptr {
+		actualReflectKind =  reflect.Struct
+		fmt.Printf("ptr type: %T\n", x)
+		reflectObject = reflectObject.Elem()
+		actualReflectKind = reflectObject.Kind()
+		reflectValue = reflectValue.Elem()
 
+	} 
 	// NumField returns a struct type's field count.
 	// It panics if the type's Kind is not Struct.
-	if reflectObject.Kind() == reflect.Struct {
-		
+	if actualReflectKind == reflect.Struct {
 		num := reflectObject.NumField();
-		fmt.Printf("there are %d fields\n", num)
+		fmt.Printf("there are %d fields, reflectKind:%v, actualReflectKind:%v\n",
+		    num, reflectKind, actualReflectKind)
 		for i := 0; i < num; i++ {
 			// 获取每个属性的结构体字段类型
 			fieldType := reflectObject.Field(i)
 			filedValue := reflectValue.Field(i)
+			fieldKind := filedValue.Kind()
 			// 输出属性名和tag
-			fmt.Printf("%dth, name: %v,  type %v, tag: '%v', value:%v \n",
-			 i, fieldType.Name, fieldType.Type, fieldType.Tag, filedValue)
+			fmt.Printf("%dth, name: %v,  type %v, tag: '%v', value:%v, fieldValueKind:%v \n",
+			    i, fieldType.Name, fieldType.Type, fieldType.Tag, filedValue, fieldKind)
+			
+			//fieldCase := interface{}(fieldKind).(type) 
+			switch fieldKind {
+			    case reflect.Int32:
+				    filedValue.SetInt(999)
+			    case reflect.String:
+				    filedValue.SetString( "aaa")
+				default:
+			 } 
 		}
 	  
 		// 通过字段名, 找到字段类型信息
@@ -119,7 +139,7 @@ func getAndUpdateFieldValueByReflect(x interface{}) {
 		}
 	} else {
 		
-		fmt.Printf("non-struct, no filed. rawValue: %v \n", reflectValue)
+		fmt.Printf("non-struct, no filed. reflectKind:%v, rawValue: %v \n", reflectKind, reflectValue)
 	}
 	
 }
