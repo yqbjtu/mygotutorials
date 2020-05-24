@@ -38,7 +38,7 @@ func main() {
 		_, isInt32 := v.(int32)
 		_, isBool := v.(bool)
 		if isStr  {
-			fmt.Printf("key:%s, value(string):%s \n", v)
+			fmt.Printf("key:%s, value(string):%s \n",k,v)
 		} else if isInt32  {
 			fmt.Printf("key:%s, value(int32):%d \n", k,v)
 		} else if isBool  {
