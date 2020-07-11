@@ -27,10 +27,10 @@ type Device struct {
 }
 
 func main() {
-	var devlist = []int{1, 2, 3, 4, 5}
+	var devList = []int{1, 2, 3, 4, 5}
 
 	var _list []interface{}
-	for _, v := range devlist {
+	for _, v := range devList {
 		_list = append(_list, v)
 	}
 	var filteredNumList = FilterByType(_list, "", func(item interface{}, deviceType string) bool {
