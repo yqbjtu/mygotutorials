@@ -42,6 +42,8 @@ func main() {
 
 	successChan := make(chan string, 3)
 	failureChan := make(chan string, 3)
+	defer close(successChan)
+	defer close(failureChan)
 	failureCount := 0
 	//var myFuncs [3]func()
 	//myFuncs[0] := method1()
