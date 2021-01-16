@@ -45,4 +45,6 @@ func init() {
 func main() {
 	//创建并执行
 	Execute()
+	klog.Info("exit main")
+	klog.Flush()
 }
