@@ -15,11 +15,13 @@ var Runcmd = &cobra.Command{
 	Short: "run command",
 	Long:  "Run command.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
+		klog.Infof("cmd:%+v, args:%+v", cmd, args)
+
+		if len(name) == 0 {
 			klog.Info("no name")
 			return
 		}
-		klog.Infof("cmd:%+v, cmd:%+v", cmd, args)
+
 		Show(name, age)
 	},
 }
