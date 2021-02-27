@@ -25,11 +25,13 @@ func (c *UserController) CreateOneUser(context *gin.Context) {
 		return
 	}
 
-	//不能直接通过req初始化User， 除非User没有UserId字段
-	//		user := mydomain.User{UserId: 1, UserName: userName} 会报cannot use promoted field UserCreateReq.UserName in struct literal of type domain.User
-	user := mydomain.User{}
-	user.UserName = req.UserName
-	user.UserId = 0
+	//	user := mydomain.User{UserId: 1, UserName: userName} 会报cannot use promoted field UserCreateReq.UserName in struct literal of type domain.User
+	// 这种太繁琐
+	//user := mydomain.User{}
+	//user.UserName = req.UserName
+	//user.UserId = 0
+
+	user := mydomain.User{UserId: 0, UserCreateReq: mydomain.UserCreateReq{UserName: req.UserName}}
 
 	context.JSON(http.StatusOK, gin.H{
 		"result": user,
