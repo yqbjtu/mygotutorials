@@ -11,6 +11,7 @@ import (
 
 /*
   http://127.0.0.1:8090/users
+  http://127.0.0.1:8090/users/find?username=tom&email=test1@163.com
   启动参数 --log_file=C:\F\ginportdemo.log --logtostderr=false --alsologtostderr=true
   --logtostderr=false表示输出到日志文件中，不再标准输出输出中展示，该参数默认值为true，
   --alsologtostderr[=false]: 同时输出日志到标准错误控制台和文件， 该参数为true后控制台和日志文件同时都有

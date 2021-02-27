@@ -8,8 +8,11 @@ import (
 func ConfigRouter(router *gin.Engine) {
 	userController := mycontroller.NewUserController()
 	router.GET("/users", userController.GetAllUsers)
-	router.GET("/users/{userId}", userController.GetOneUser)
+	router.GET("/usersfind", userController.FindUsers)
+	router.GET("/users/:userId", userController.GetOneUser)
 	router.PUT("/users", userController.CreateOneUser)
-	router.POST("/users/{userId}", userController.UpdateOneUser)
-	router.DELETE("/users/{userId}", userController.DeleteOneUser)
+	router.POST("/users/:userId", userController.UpdateOneUser)
+	router.DELETE("/users/:userId", userController.DeleteOneUser)
+	// 匹配的url格式:  /welcome?firstname=Jane&lastname=Doe
+
 }

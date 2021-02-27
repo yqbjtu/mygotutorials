@@ -38,14 +38,30 @@ func (c *UserController) GetAllUsers(context *gin.Context) {
 }
 
 func (c *UserController) GetOneUser(context *gin.Context) {
-	klog.Infof("get one user")
+	userId := context.Param("userId")
+	klog.Infof("get one user by id %v", userId)
+}
+
+/*
+  // 匹配的url格式:  /users/find?username=tom&email=test1@163.com
+*/
+func (c *UserController) FindUsers(context *gin.Context) {
+	userId := context.Param("userId")
+	klog.Infof("get one user by id %v", userId)
+
+	userName := context.DefaultQuery("username", "张三")
+	email := context.Query("email")
+	// 执行实际搜索，这里只是示例
+	context.String(http.StatusOK, "search user by %s %s", userName, email)
 }
 
 func (c *UserController) UpdateOneUser(context *gin.Context) {
-	klog.Infof("update user")
+	userId := context.Param("userId")
+	klog.Infof("update user by id %v", userId)
 }
 
 func (c *UserController) DeleteOneUser(context *gin.Context) {
-	klog.Infof("delete user")
+	userId := context.Param("userId")
+	klog.Infof("delete user by id %v", userId)
 
 }
