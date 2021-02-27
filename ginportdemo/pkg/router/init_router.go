@@ -13,6 +13,4 @@ func ConfigRouter(router *gin.Engine) {
 	router.PUT("/users", userController.CreateOneUser)
 	router.POST("/users/:userId", userController.UpdateOneUser)
 	router.DELETE("/users/:userId", userController.DeleteOneUser)
-	// 匹配的url格式:  /welcome?firstname=Jane&lastname=Doe
-
 }
