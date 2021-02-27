@@ -19,6 +19,22 @@ func NewUserController() *UserController {
 
 func (c *UserController) CreateOneUser(context *gin.Context) {
 	klog.Infof("create one user")
+	var req mydomain.UserCreateReq
+	if err := context.ShouldBindJSON(&req); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	//不能直接通过req初始化User， 除非User没有UserId字段
+	//		user := mydomain.User{UserId: 1, UserName: userName} 会报cannot use promoted field UserCreateReq.UserName in struct literal of type domain.User
+	user := mydomain.User{}
+	user.UserName = req.UserName
+	user.UserId = 0
+
+	context.JSON(http.StatusOK, gin.H{
+		"result": user,
+		"msg":    "create user successfully",
+	})
 }
 
 func (c *UserController) GetAllUsers(context *gin.Context) {
@@ -28,9 +44,11 @@ func (c *UserController) GetAllUsers(context *gin.Context) {
 	var users []mydomain.User
 	for i := 0; i < 3; i++ {
 		userName := fmt.Sprintf("tom%d", i)
-		user := mydomain.User{UserId: 1, UserName: userName}
+		user := mydomain.User{UserId: 1}
+		user.UserName = userName
 		users = append(users, user)
 	}
+
 	context.JSON(http.StatusOK, gin.H{
 		"result": users,
 		"count":  len(users),
@@ -39,29 +57,26 @@ func (c *UserController) GetAllUsers(context *gin.Context) {
 
 func (c *UserController) GetOneUser(context *gin.Context) {
 	userId := context.Param("userId")
-	klog.Infof("get one user by id %v", userId)
+	klog.Infof("get one user by id %q", userId)
 }
 
 /*
-  // 匹配的url格式:  /users/find?username=tom&email=test1@163.com
+  // 匹配的url格式:  /usersfind?username=tom&email=test1@163.com
 */
 func (c *UserController) FindUsers(context *gin.Context) {
-	userId := context.Param("userId")
-	klog.Infof("get one user by id %v", userId)
-
 	userName := context.DefaultQuery("username", "张三")
 	email := context.Query("email")
 	// 执行实际搜索，这里只是示例
-	context.String(http.StatusOK, "search user by %s %s", userName, email)
+	context.String(http.StatusOK, "search user by %q %q", userName, email)
 }
 
 func (c *UserController) UpdateOneUser(context *gin.Context) {
 	userId := context.Param("userId")
-	klog.Infof("update user by id %v", userId)
+	klog.Infof("update user by id %q", userId)
 }
 
 func (c *UserController) DeleteOneUser(context *gin.Context) {
 	userId := context.Param("userId")
-	klog.Infof("delete user by id %v", userId)
+	klog.Infof("delete user by id %q", userId)
 
 }
