@@ -39,5 +39,5 @@ func main() {
 	webServer.ListenAndServe()
 
 	//router.Run()
-	// router.Run(":3000") 也能运行制定端口和ip上
+	// router.Run(":8090") 也能运行制定端口和ip上
 }
