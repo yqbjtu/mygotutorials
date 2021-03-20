@@ -63,7 +63,7 @@ type JWT struct {
 	SigningKey []byte
 }
 
-// 载荷，可以加一些自己需要的信息
+// 载荷，可添加自己需要的一些信息
 type CustomClaims struct {
 	UserId   int64  `json:"userId"`
 	UserName string `json:"userName"`
