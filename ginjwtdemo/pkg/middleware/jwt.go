@@ -12,15 +12,19 @@ import (
 )
 
 /*
-  JWTAuth 中间件，检查token
+   JWTAuth 中间件，检查token
    对于/login直接跳过token验证，因为login接口是生成token的接口
 */
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//过滤是否验证token
+		klog.Infof("reqURI:%v", c.Request.RequestURI)
+		//过滤是否验证token， 示例代码没有完整设置白名单路径
 		if strings.Contains(c.Request.RequestURI, "login") {
 			return
+		} else if c.Request.RequestURI == "/" ||  c.Request.RequestURI == "/index.html"{
+			return
 		}
+			
 
 		token := c.Request.Header.Get("token")
 		if token == "" {

@@ -21,6 +21,9 @@ func NewUserController() *UserController {
 	return &controller
 }
 
+
+
+
 func (ctl *UserController) Login(c *gin.Context) {
 	klog.Infof("login to get a token")
 	var loginReq mydomain.LoginReq
